@@ -2,13 +2,13 @@
   "name": "notes-api",
   "version": "1.0.0",
   "description": "Notes creating Website",
-  "homepage": "https://github.com/mackcodes/notes-api#readme",
+  "homepage": "https://github.com/mackcodes/notes-server-filesystem#readme",
   "bugs": {
-    "url": "https://github.com/mackcodes/notes-api/issues"
+    "url": "https://github.com/mackcodes/notes-server-filesystem/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mackcodes/notes-api.git"
+    "url": "git+https://github.com/mackcodes/notes-server-filesystem.git"
   },
   "license": "MIT",
   "author": "Mayank Kumar",

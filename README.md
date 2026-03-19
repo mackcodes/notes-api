@@ -1,4 +1,4 @@
-# Notes Server (Filesystem)
+# Notes Server (using local File System)
 
 A simple file-based Notes application built with Express and EJS.
 
@@ -17,6 +17,31 @@ The first line of each `.txt` file is used as the note title. The remaining cont
 - EJS
 - Native Node.js `fs` module (for filesystem storage)
 - Tailwind CSS (via CDN)
+
+## About EJS (Template Engine)
+
+EJS stands for Embedded JavaScript. It lets you generate HTML pages using dynamic data sent from your Express routes.
+
+In this project:
+- `views/index.ejs` renders the list of notes
+- `views/show.ejs` renders a single note page
+- `res.render()` in Express passes data from `server.js` to these templates
+
+Common EJS tags:
+- `<%= value %>`: outputs escaped text to HTML
+- `<% code %>`: runs JavaScript logic (loops, if conditions)
+- `<%- html %>`: outputs unescaped HTML (use carefully)
+
+Quick example:
+
+```ejs
+<h1><%= title %></h1>
+<% if (items.length) { %>
+    <% items.forEach(function(item) { %>
+        <p><%= item %></p>
+    <% }) %>
+<% } %>
+```
 
 ## Project Structure
 
@@ -57,13 +82,13 @@ Download Node.js: https://nodejs.org/en/download
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/mackcodes/notes-api.git
+git clone git@github.com:mackcodes/notes-server-filesystem.git
 ```
 
 ### 2. Move into the project folder
 
 ```bash
-cd notes-api
+cd notes-server-filesystem
 ```
 
 If your local folder name is different (for example `notes-server-filesystem`), use that folder name instead.
