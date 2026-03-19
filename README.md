@@ -1,191 +1,314 @@
-# Notes Server (using local File System)
+# 📝 Notes App — File System Edition
 
-A simple file-based Notes application built with Express and EJS.
+> A lightweight note-taking web app built with **Node.js**, **Express**, and **EJS** — no database required. Notes are stored as plain `.txt` files on the server.
 
-This project lets users:
-- Create notes from a web form
-- Store notes as `.txt` files in a local `files/` directory
-- View all notes on the home page
-- Open individual notes on a details page
+---
 
-The first line of each `.txt` file is used as the note title. The remaining content is treated as note details.
+## ✨ Features
 
-## Tech Stack
+- 📄 Create notes from a clean web form
+- 💾 Store notes as `.txt` files locally
+- 🏠 View all notes on the home page
+- 🔍 Open and read individual notes
+- 🎨 Clean dark UI with Tailwind CSS
 
-- Node.js
-- Express
-- EJS
-- Native Node.js `fs` module (for filesystem storage)
-- Tailwind CSS (via CDN)
+---
 
-## About EJS (Template Engine)
+## 🛠 Tech Stack
 
-EJS stands for Embedded JavaScript. It lets you generate HTML pages using dynamic data sent from your Express routes.
+| Technology | Purpose |
+|---|---|
+| Node.js | Runtime environment |
+| Express | Web framework |
+| EJS | Template engine |
+| fs module | File system storage |
+| Tailwind CSS | Styling (via CDN) |
 
-In this project:
-- `views/index.ejs` renders the list of notes
-- `views/show.ejs` renders a single note page
-- `res.render()` in Express passes data from `server.js` to these templates
+---
 
-Common EJS tags:
-- `<%= value %>`: outputs escaped text to HTML
-- `<% code %>`: runs JavaScript logic (loops, if conditions)
-- `<%- html %>`: outputs unescaped HTML (use carefully)
+## 🚀 Getting Started
 
-Quick example:
+### Prerequisites
+- Node.js 18+ → [Download here](https://nodejs.org/en/download)
+- npm (comes with Node.js)
 
-```ejs
-<h1><%= title %></h1>
-<% if (items.length) { %>
-    <% items.forEach(function(item) { %>
-        <p><%= item %></p>
-    <% }) %>
-<% } %>
+### 1. Clone the repository
+```bash
+git clone git@github.com:mackcodes/notes-server-filesystem.git
 ```
 
-## Project Structure
+### 2. Move into the project folder
+```bash
+cd notes-server-filesystem
+```
 
-```text
+### 3. Install dependencies
+```bash
+npm install
+```
+
+### 4. Start the server
+```bash
+# Production
+npm run start
+
+# Development (auto-restart on file changes)
+npm run dev
+```
+
+### 5. Open in browser
+```
+http://localhost:3000
+```
+
+---
+
+## 📁 Project Structure
+
+```
 notes-server-filesystem/
-├── server.js
+├── server.js               ← main server file
 ├── package.json
 ├── README.md
 ├── files/
-│   └── *.txt
+│   └── *.txt               ← notes stored here
 ├── public/
 │   ├── images/
 │   │   └── favicon.svg
 │   ├── javascripts/
 │   └── stylesheets/
 └── views/
-    ├── index.ejs
-    └── show.ejs
+    ├── index.ejs           ← home page
+    └── show.ejs            ← single note page
 ```
 
-## How It Works
+---
 
-1. Home route (`GET /`) reads all `.txt` files from `files/`.
-2. For each file, the first line is extracted as the title.
-3. The home page renders all note cards.
-4. Submitting the create form (`POST /create`) writes a new `.txt` file.
-5. Opening a note route (`GET /file/:filename`) shows title + details.
+## 🔗 Routes
 
-## Prerequisites
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/` | Render all notes |
+| `POST` | `/create` | Create a new note |
+| `GET` | `/file/:filename` | Render a single note |
 
-- Node.js 18+ recommended
-- npm (comes with Node.js)
+---
 
-Download Node.js: https://nodejs.org/en/download
+## 💾 Note Storage Format
 
-## Installation and Run (Step-by-Step)
+Each note is saved as a `.txt` file like this:
 
-### 1. Clone the repository
-
-```bash
-git clone git@github.com:mackcodes/notes-server-filesystem.git
+```
+My Note Title
+This is the first line of details.
+This is the second line of details.
 ```
 
-### 2. Move into the project folder
+- **Line 1** → used as the note title
+- **Remaining lines** → used as note content
 
-```bash
-cd notes-server-filesystem
+---
+
+## 🧩 About EJS
+
+EJS stands for **Embedded JavaScript**. It is a template engine that lets you write HTML with JavaScript logic inside it. Instead of sending plain HTML, your Express server processes the `.ejs` file, injects dynamic data into it, and then sends the final HTML to the browser.
+
+Think of it like this:
+
+```
+Express (data) + EJS (template) = Final HTML sent to browser
 ```
 
-If your local folder name is different (for example `notes-server-filesystem`), use that folder name instead.
+---
 
-### 3. Install dependencies
+### How EJS fits in this project
 
-```bash
-npm install
+```
+Browser requests /
+        ↓
+Express reads all .txt files from /files
+        ↓
+Passes file list to index.ejs via res.render()
+        ↓
+EJS loops through files and builds HTML cards
+        ↓
+Final HTML is sent back to browser
 ```
 
-### 4. Start the server
-
-```bash
-npm run start
+In `server.js`:
+```javascript
+app.get('/', function(req, res) {
+    fs.readdir('./files', function(err, files) {
+        res.render('index', { files: files, titles: titles });
+        //                    ↑ this data is sent to index.ejs
+    });
+});
 ```
 
-For development with auto-restart on file changes:
-
-```bash
-npm run dev
+In `index.ejs`, you receive and use that data:
+```ejs
+<% files.forEach(function(val, index) { %>
+    <h1><%= titles[index] %></h1>
+<% }) %>
 ```
 
-The app runs on:
+---
 
-http://localhost:3000
+### EJS Tags — Full Reference
 
-Open that URL in your browser.
+| Tag | Name | Purpose | Example |
+|---|---|---|---|
+| `<%= %>` | Output tag | Prints value to HTML (safe, escaped) | `<%= username %>` |
+| `<% %>` | Scriptlet tag | Runs JS logic, prints nothing | `<% if(x > 0) { %>` |
+| `<%- %>` | Unescaped tag | Prints raw HTML (be careful!) | `<%- htmlContent %>` |
+| `<%# %>` | Comment tag | EJS comment, not sent to browser | `<%# this is a note %>` |
+| `<%_ %>` | Whitespace tag | Removes whitespace before tag | `<%_ if(x) { %>` |
 
-## Routes
+---
 
-- `GET /` : render all notes
-- `POST /create` : create a new note file
-- `GET /file/:filename` : render one note page
+### Output tag `<%= %>`
 
-## Note Storage Format
+Used to display a variable value in HTML. EJS automatically escapes special characters to prevent XSS attacks.
 
-Each note file is saved like this:
-
-```text
-My Title
-Line 1 of note details
-Line 2 of note details
+```ejs
+<h1><%= title %></h1>
+<p><%= filedata %></p>
+<a href="/file/<%= filename %>">Open</a>
 ```
 
-- Line 1 -> title
-- Remaining lines -> note details
+---
 
-## Favicon and Static Assets
+### Scriptlet tag `<% %>`
 
-Static assets are served from the `public/` folder using Express static middleware.
+Used to write JavaScript logic — `if`, `for`, `forEach`, etc. Does not print anything to HTML on its own.
 
-That means:
-- file path: `public/images/favicon.svg`
-- browser path: `/images/favicon.svg`
+```ejs
+<% if (files.length > 0) { %>
+    <p>You have notes!</p>
+<% } else { %>
+    <p>No notes yet.</p>
+<% } %>
+```
 
-Use this in EJS pages:
+```ejs
+<% files.forEach(function(file, index) { %>
+    <div>
+        <h2><%= titles[index] %></h2>
+    </div>
+<% }) %>
+```
 
+---
+
+### Unescaped tag `<%- %>`
+
+Prints raw HTML directly. Use carefully — never use with user input as it can cause security issues.
+
+```ejs
+<%- '<strong>bold text</strong>' %>
+```
+
+---
+
+### EJS in this project — real examples
+
+**`index.ejs`** — loop through notes and render cards:
+```ejs
+<% if(files.length > 0){ %>
+    <% files.forEach(function(val, index){ %>
+        <div class="task bg-zinc-800 rounded-md p-4">
+            <h1><%= titles[index] %></h1>
+            <a href="/file/<%= val %>">Read more</a>
+        </div>
+    <% }) %>
+<% } else { %>
+    <h3>No tasks yet</h3>
+<% } %>
+```
+
+**`show.ejs`** — display a single note:
+```ejs
+<h1><%= filename %></h1>
+<pre><%= filedata %></pre>
+```
+
+---
+
+### Setting up EJS in Express
+
+```javascript
+app.set("view engine", "ejs");  // tell Express to use EJS
+```
+
+```javascript
+res.render("index", { files: files, titles: titles });
+//          ↑ file name inside views/    ↑ data passed to template
+```
+
+EJS automatically looks inside the `views/` folder — no need to write the full path or `.ejs` extension.
+
+---
+
+## 🖼 Static Assets & Favicon
+
+Static files are served from the `public/` folder.
+
+```javascript
+app.use(express.static(path.join(__dirname, "public")));
+```
+
+| File path | Browser path |
+|---|---|
+| `public/images/favicon.svg` | `/images/favicon.svg` |
+
+Add favicon in your EJS files:
 ```html
 <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
 ```
 
-## Common Issues and Fixes
+---
 
-### 1. Favicon not showing
+## 🐛 Common Issues & Fixes
 
+### Favicon not showing
 - Confirm file exists at `public/images/favicon.svg`
 - Use `/images/favicon.svg` (not `../public/...`)
-- Hard refresh browser: `Ctrl + Shift + R`
+- Hard refresh: `Ctrl + Shift + R`
 
-### 2. Port already in use
+### Port already in use
+```bash
+# Find and kill process on port 3000
+kill -9 $(lsof -t -i:3000)
+```
 
-If port `3000` is busy, stop the other process or change the port in `server.js`.
+### Files not listed on home page
+- Make sure files end with `.txt`
+- Make sure files are inside the `files/` folder
 
-### 3. Files are not listed on home page
+---
 
-Only `.txt` files are shown.
-Make sure your note files end with `.txt` and are inside `files/`.
+## 🔮 Future Improvements
 
-### 4. Special characters in title as filename
+- [ ] Add note delete and edit features
+- [ ] Add validation for empty title/details
+- [ ] Sanitize title into safe filenames
+- [ ] Add timestamps (created/updated)
+- [ ] Migrate to database storage (MongoDB/PostgreSQL)
+- [ ] Add tests for routes and file operations
 
-Current logic removes spaces only. Very special characters may cause file-name issues on some systems.
+---
 
-## Improvements You Can Add
+## 📚 Useful References
 
-- Add note delete and edit features
-- Add validation for empty title/details
-- Sanitize title into safe filenames
-- Add timestamps (created/updated)
-- Add database storage (MongoDB/PostgreSQL) for scale
-- Add tests for routes and file operations
+- [Express Docs](https://expressjs.com/)
+- [EJS Docs](https://ejs.co/)
+- [Node.js fs Docs](https://nodejs.org/api/fs.html)
 
-## Useful References
+---
 
-- Express docs: https://expressjs.com/
-- EJS docs: https://ejs.co/
-- Node.js fs docs: https://nodejs.org/api/fs.html
+## 📄 License
 
-## License
+MIT © 2026
 
-MIT
+---
+
